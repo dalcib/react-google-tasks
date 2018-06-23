@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "checkJs": true,
+    "target": "es2015",
+    "lib": ["es5", "es2016", "dom", "scripthost"],
+    "jsx": "react",
+    "moduleResolution": "node"
+  }
+}

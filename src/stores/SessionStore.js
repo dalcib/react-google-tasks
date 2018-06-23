@@ -1,58 +1,59 @@
-import { EventEmitter } from 'events';
+// @ts-nocheck
+import { EventEmitter } from 'events'
 
-import AppDispatcher from '../dispatcher/AppDispatcher';
-import AppConstants from '../constants/AppConstants';
+import AppDispatcher from '../dispatcher/AppDispatcher'
+import AppConstants from '../constants/AppConstants'
 
-const CHANGE_EVENT = 'change';
+const CHANGE_EVENT = 'change'
 
-let _isLoggedIn = false;
+let _isLoggedIn = false
 
 const SessionStore = Object.assign({}, EventEmitter.prototype, {
   isLoggedIn() {
-    return _isLoggedIn;
+    return _isLoggedIn
   },
 
   emitChange() {
-    this.emit(CHANGE_EVENT);
+    this.emit(CHANGE_EVENT)
   },
 
   addChangeListener(callback) {
-    this.on(CHANGE_EVENT, callback);
+    this.on(CHANGE_EVENT, callback)
   },
 
   removeChangeListener(callback) {
-    this.removeListener(CHANGE_EVENT, callback);
-  }
-
-});
+    this.removeListener(CHANGE_EVENT, callback)
+  },
+})
 
 AppDispatcher.register(action => {
-  console.info(action.type, action);
+  console.info(action.type, action)
 
-  switch(action.type) {
+  switch (action.type) {
     case AppConstants.SESSION_AUTHORIZE_SUCCESS: {
-      _isLoggedIn = true;
+      _isLoggedIn = true
 
-      SessionStore.emitChange();
-      break;
+      SessionStore.emitChange()
+      break
     }
 
     case AppConstants.SESSION_AUTHORIZE_FAIL: {
-      _isLoggedIn = false;
+      _isLoggedIn = false
 
-      SessionStore.emitChange();
-      break;
+      SessionStore.emitChange()
+      break
     }
 
     case AppConstants.SESSION_LOGOUT_SUCCESS: {
-      _isLoggedIn = false;
+      _isLoggedIn = false
 
-      SessionStore.emitChange();
-      break;
+      SessionStore.emitChange()
+      break
     }
 
-    default: {}
+    default: {
+    }
   }
-});
+})
 
-export default SessionStore;
+export default SessionStore

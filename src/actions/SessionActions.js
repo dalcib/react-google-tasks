@@ -1,40 +1,45 @@
-import AppDispatcher from '../dispatcher/AppDispatcher';
-import AppConstants from '../constants/AppConstants';
+import AppDispatcher from '../dispatcher/AppDispatcher'
+import AppConstants from '../constants/AppConstants'
 
-import api from '../api';
+import api from '../api/index'
 
 const SessionActions = {
   authorize(immediate = false, callback) {
-    api.authorize({ immediate })
+    console.log('authorize')
+    api
+      .authorize({ immediate })
       .then(() => {
+        console.log('authorizeOK')
         AppDispatcher.dispatch({
-          type: AppConstants.SESSION_AUTHORIZE_SUCCESS
-        });
+          type: AppConstants.SESSION_AUTHORIZE_SUCCESS,
+        })
 
-        if (callback) callback();
+        if (callback) callback()
       })
-      .catch((err) => {
+      .catch(err => {
+        console.log('authorizeERRRRRR')
         AppDispatcher.dispatch({
           type: AppConstants.SESSION_AUTHORIZE_FAIL,
-          error: err
-        });
+          error: err,
+        })
 
-        if (callback) callback();
-      });
+        if (callback) callback()
+      })
   },
 
   logout() {
     return new Promise((resolve, reject) => {
-      api.logout()
-          .then(() => {
-            AppDispatcher.dispatch({
-              type: AppConstants.SESSION_LOGOUT_SUCCESS
-            });
-            resolve();
+      api
+        .logout()
+        .then(() => {
+          AppDispatcher.dispatch({
+            type: AppConstants.SESSION_LOGOUT_SUCCESS,
           })
-          .catch((error) => reject(error));
-    });
-  }
-};
+          resolve()
+        })
+        .catch(error => reject(error))
+    })
+  },
+}
 
-export default SessionActions;
+export default SessionActions

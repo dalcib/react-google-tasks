@@ -1,88 +1,93 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import { observer } from 'mobx-react'
+import PropTypes from 'prop-types'
 
-import SessionActions from '../actions/SessionActions';
-import SessionStore from '../stores/SessionStore';
+import taskList from '../stores/TaskList'
 
-import TaskListsStore from '../stores/TaskListsStore';
-import TaskListsActions from '../actions/TaskListsActions';
+import SessionActions from '../actions/SessionActions'
+import SessionStore from '../stores/SessionStore'
 
-import TaskListCreateModal from '../components/TaskListCreateModal';
-import TaskListsPage from '../components/TaskListsPage';
+//import TaskListsStore from '../stores/TaskListsStore'
+//import TaskListsActions from '../actions/TaskListsActions'
+
+import TaskListCreateModal from '../components/TaskListCreateModal'
+import TaskListsPage from '../components/TaskListsPage'
 
 function getStateFromFlux() {
   return {
-    taskLists: TaskListsStore.getTaskLists()
-  };
+    taskLists: taskList.taskLists, //TaskListsStore.getTaskLists(),
+  }
 }
 
+@observer
 class TaskListsPageContainer extends Component {
-
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
     this.state = {
       ...getStateFromFlux(),
-      isCreatingTaskList: false
-    };
+      isCreatingTaskList: false,
+    }
   }
 
   componentWillMount() {
-    TaskListsActions.loadTaskLists();
+    taskList.loadTaskLists()
   }
 
-  componentDidMount() {
-    TaskListsStore.addChangeListener(this._onChange);
+  /*   componentDidMount() {
+    TaskListsStore.addChangeListener(this._onChange)
   }
 
   componentWillUnmount() {
-    TaskListsStore.removeChangeListener(this._onChange);
-  }
+    TaskListsStore.removeChangeListener(this._onChange)
+  } */
 
   handleAddTaskList = () => {
-    this.setState({ isCreatingTaskList: true });
-  };
+    this.setState({ isCreatingTaskList: true })
+  }
 
   handleTaskListCreateModalClose = () => {
-    this.setState({ isCreatingTaskList: false });
-  };
+    this.setState({ isCreatingTaskList: false })
+  }
 
-  handleTaskListSubmit = (taskList) => {
-    TaskListsActions.createTaskList(taskList);
+  handleTaskListSubmit = taskList => {
+    taskList.createTaskList(taskList)
 
-    this.setState({ isCreatingTaskList: false });
-  };
+    this.setState({ isCreatingTaskList: false })
+  }
 
   onLogOut = () => {
-    SessionActions.logout()
-        .then(() => {
-          if (!SessionStore.isLoggedIn()) {
-            this.context.router.replace('/login');
-          }
-        });
-  };
+    SessionActions.logout().then(() => {
+      if (!SessionStore.isLoggedIn()) {
+        this.context.router.replace('/login')
+      }
+    })
+  }
 
   render() {
     return (
-        <div>
-          <TaskListsPage taskLists={this.state.taskLists}
-                         page={this.props.children}
-                         onAddTaskList={this.handleAddTaskList}
-                         onLogOut={this.onLogOut}
-          />
-          <TaskListCreateModal isOpen={this.state.isCreatingTaskList}
-                               onSubmit={this.handleTaskListSubmit}
-                               onClose={this.handleTaskListCreateModalClose}
-          />
-        </div>
-    );
+      <div>
+        <TaskListsPage
+          taskLists={this.state.taskLists}
+          page={this.props.children}
+          onAddTaskList={this.handleAddTaskList}
+          onLogOut={this.onLogOut}
+        />
+        <TaskListCreateModal
+          isOpen={this.state.isCreatingTaskList}
+          onSubmit={this.handleTaskListSubmit}
+          onClose={this.handleTaskListCreateModalClose}
+        />
+      </div>
+    )
   }
 
   _onChange = () => {
-    this.setState(getStateFromFlux());
-  };
+    this.setState(getStateFromFlux())
+  }
 }
 
 TaskListsPageContainer.contextTypes = {
-  router: React.PropTypes.object.isRequired
-};
+  router: PropTypes.object.isRequired,
+}
 
-export default TaskListsPageContainer;
+export default TaskListsPageContainer

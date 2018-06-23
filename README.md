@@ -18,3 +18,6 @@ Then change your CLIENT_ID of Google Tasks API in `./src/config.js` and then run
 ```
 npm start
 ```
+
+
+  require.resolve('babel-plugin-transform-decorators-legacy'),
