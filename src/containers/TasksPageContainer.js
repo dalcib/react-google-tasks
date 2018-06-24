@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 
-import tasks from '../stores/Tasks'
-import taskList from '../stores/TaskList'
+import tasksStore from '../stores/Tasks'
+import taskListStore from '../stores/TaskList'
 //import TasksActions from '../actions/TasksActions'
 //import TaskListsActions from '../actions/TaskListsActions'
 //import TasksStore from '../stores/TasksStore'
@@ -14,10 +14,10 @@ import TaskCreateModal from '../components/TaskCreateModal'
 
 function getStateFromFlux() {
   return {
-    tasks: tasks.tasks, //TasksStore.getTasks(),
-    error: tasks.error, //TasksStore.getError(),
-    isLoadingTask: tasks.isLoading, //TasksStore.isLoadingTasks(),
-    taskList: taskList.currentTaskList || {}, //TaskListsStore.getCurrentTaskList() || {},
+    tasks: tasksStore.tasks, //TasksStore.getTasks(),
+    error: tasksStore.error, //TasksStore.getError(),
+    isLoadingTask: tasksStore.isLoading, //TasksStore.isLoadingTasks(),
+    taskList: taskListStore.currentTaskList || {}, //TaskListsStore.getCurrentTaskList() || {},
   }
 }
 
@@ -32,19 +32,21 @@ class TasksPageContainer extends Component {
   }
 
   componentWillMount() {
-    tasks.loadTasks(this.props.params.id)
-    taskList.loadTaskList(this.props.params.id)
+    tasksStore.loadTasks(this.props.params.id)
+    taskListStore.loadTaskList(this.props.params.id)
   }
 
-  /*   componentDidMount() {
-    TasksStore.addChangeListener(this._onChange)
-    TaskListsStore.addChangeListener(this._onChange)
-  } */
+  componentDidMount() {
+    tasksStore.loadTasks(this.props.params.id)
+    taskListStore.loadTaskList(this.props.params.id)
+    //TasksStore.addChangeListener(this._onChange)
+    //TaskListsStore.addChangeListener(this._onChange)
+  }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.params.id !== nextProps.params.id) {
-      tasks.loadTasks(nextProps.params.id)
-      taskList.loadTaskList(nextProps.params.id)
+      tasksStore.loadTasks(nextProps.params.id)
+      taskListStore.loadTaskList(nextProps.params.id)
     }
   }
 
@@ -55,7 +57,7 @@ class TasksPageContainer extends Component {
 
   handleTaskStatusChange = (taskId, { isCompleted }) => {
     console.log('handleTaskStatusChange', taskId, isCompleted)
-    tasks.updateTaskStatus({
+    tasksStore.updateTaskStatus({
       taskListId: this.props.params.id,
       taskId,
       isCompleted,
@@ -63,7 +65,7 @@ class TasksPageContainer extends Component {
   }
 
   handleTaskUpdate = (taskId, task) => {
-    tasks.updateTask({
+    tasksStore.updateTask({
       taskListId: this.props.params.id,
       taskId: taskId,
       ...task,
@@ -71,7 +73,7 @@ class TasksPageContainer extends Component {
   }
 
   handleTaskDelete = taskId => {
-    tasks.deleteTask({
+    tasksStore.deleteTask({
       taskListId: this.props.params.id,
       taskId,
     })
@@ -88,7 +90,7 @@ class TasksPageContainer extends Component {
   handleTaskSubmit = task => {
     const taskListId = this.props.params.id
 
-    tasks.createTask({ taskListId, ...task })
+    tasksStore.createTask({ taskListId, ...task })
 
     this.setState({ isCreatingTask: false })
   }
@@ -99,7 +101,7 @@ class TasksPageContainer extends Component {
     )
 
     if (isConfirmed) {
-      taskList.deleteTaskList({
+      taskListStore.deleteTaskList({
         taskListId: this.props.params.id,
       })
       this.context.router.push('/lists')
@@ -107,7 +109,7 @@ class TasksPageContainer extends Component {
   }
 
   handleUpdateTaskList = ({ name }) => {
-    taskList.updateTaskList({
+    taskListStore.updateTaskList({
       taskListId: this.props.params.id,
       name,
     })

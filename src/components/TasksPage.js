@@ -57,7 +57,7 @@ class TasksPage extends Component {
   renderTasks = () => {
     return (
       <div className="TasksPage__tasks">
-        {this.props.tasks.length ? (
+        {this.props.tasks && this.props.tasks.length ? (
           this.props.tasks.map(task => (
             <Task
               key={task.id}

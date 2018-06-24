@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 
-import taskList from '../stores/TaskList'
+import taskListStore from '../stores/TaskList'
+import sessionStore from '../stores/Session'
 
-import SessionActions from '../actions/SessionActions'
-import SessionStore from '../stores/SessionStore'
+//import SessionActions from '../actions/SessionActions'
+//import SessionStore from '../stores/SessionStore'
 
 //import TaskListsStore from '../stores/TaskListsStore'
 //import TaskListsActions from '../actions/TaskListsActions'
@@ -14,8 +15,11 @@ import TaskListCreateModal from '../components/TaskListCreateModal'
 import TaskListsPage from '../components/TaskListsPage'
 
 function getStateFromFlux() {
+  if (!taskListStore.taskLists) {
+    taskListStore.loadTaskLists()
+  }
   return {
-    taskLists: taskList.taskLists, //TaskListsStore.getTaskLists(),
+    taskLists: taskListStore.taskLists, //TaskListsStore.getTaskLists(),
   }
 }
 
@@ -23,21 +27,25 @@ function getStateFromFlux() {
 class TaskListsPageContainer extends Component {
   constructor(props, context) {
     super(props, context)
+    taskListStore.loadTaskLists()
     this.state = {
-      ...getStateFromFlux(),
+      taskLists: taskListStore.taskLists,
+      //...getStateFromFlux(),
       isCreatingTaskList: false,
     }
   }
 
   componentWillMount() {
-    taskList.loadTaskLists()
+    taskListStore.loadTaskLists()
   }
 
-  /*   componentDidMount() {
-    TaskListsStore.addChangeListener(this._onChange)
+  componentDidMount() {
+    console.log('componentDidMount', this.state)
+    //taskListStore.loadTaskLists()
+    //TaskListsStore.addChangeListener(this._onChange)
   }
 
-  componentWillUnmount() {
+  /* componentWillUnmount() {
     TaskListsStore.removeChangeListener(this._onChange)
   } */
 
@@ -56,18 +64,20 @@ class TaskListsPageContainer extends Component {
   }
 
   onLogOut = () => {
-    SessionActions.logout().then(() => {
-      if (!SessionStore.isLoggedIn()) {
+    sessionStore.logout().then(() => {
+      if (!sessionStore.isLoggedIn) {
         this.context.router.replace('/login')
       }
     })
   }
 
   render() {
+    console.log(this.state.taskLists, taskListStore.taskLists)
     return (
       <div>
         <TaskListsPage
           taskLists={this.state.taskLists}
+          taskListStore={taskListStore}
           page={this.props.children}
           onAddTaskList={this.handleAddTaskList}
           onLogOut={this.onLogOut}

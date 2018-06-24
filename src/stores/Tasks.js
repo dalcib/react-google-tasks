@@ -1,5 +1,23 @@
-import { observable, action } from 'mobx'
+import { observable, action, runInAction } from 'mobx'
 import api from '../api/index'
+
+function formatTask(data) {
+  return {
+    id: data.id,
+    text: data.title,
+    notes: data.notes,
+    due: data.due ? new Date(data.due) : undefined,
+    isCompleted: data.status === 'completed',
+    position: data.position,
+  }
+}
+
+function getErrorMessageByCode(code) {
+  const errorMessages = {
+    400: 'Cannot load task list',
+  }
+  return errorMessages[code] || 'Something bad happened'
+}
 
 class Tasks {
   @observable tasks = []
@@ -11,10 +29,10 @@ class Tasks {
     api
       .listTasks(taskListId)
       .then(data => {
-        this.tasks = data.items.map(formatTask) || []
+        runInAction(() => (this.tasks = data.items.map(formatTask) || []))
       })
       .catch(err => {
-        this.error = getErrorMessageByCode(err.error.code)
+        runInAction(() => (this.error = getErrorMessageByCode(err.error.code)))
       })
   }
 
@@ -28,10 +46,10 @@ class Tasks {
       })
       .then(data => {
         const updatedTaskIndex = this.tasks.findIndex(task => task.id === data.id)
-        this.tasks[updatedTaskIndex] = formatTask(data)
+        runInAction(() => (this.tasks[updatedTaskIndex] = formatTask(data)))
       })
       .catch(err => {
-        this.error = getErrorMessageByCode(err.error.code)
+        runInAction(() => (this.error = getErrorMessageByCode(err.error.code)))
       })
   }
 
@@ -51,10 +69,10 @@ class Tasks {
       })
       .then(data => {
         const updatedTaskIndex = this.tasks.findIndex(task => task.id === params.taskId)
-        this.tasks[updatedTaskIndex] = formatTask(data)
+        runInAction(() => (this.tasks[updatedTaskIndex] = formatTask(data)))
       })
       .catch(err => {
-        this.error = getErrorMessageByCode(err.error.code)
+        runInAction(() => (this.error = getErrorMessageByCode(err.error.code)))
       })
   }
 
@@ -76,10 +94,10 @@ class Tasks {
       .insertTask(newTask)
       .then(data => {
         const newTask = formatTask(data)
-        this.tasks.unshift(newTask)
+        runInAction(() => this.tasks.unshift(newTask))
       })
       .catch(err => {
-        this.error = getErrorMessageByCode(err.error.code)
+        runInAction(() => (this.error = getErrorMessageByCode(err.error.code)))
       })
   }
 
@@ -89,33 +107,14 @@ class Tasks {
       .deleteTask({ taskListId: params.taskListId, taskId: params.taskId })
       .then(data => {
         const deletedTaskIndex = this.tasks.findIndex(task => task.id === params.taskId)
-        this.tasks.splice(deletedTaskIndex, 1)
+        runInAction(() => this.tasks.splice(deletedTaskIndex, 1))
       })
       .catch(err => {
-        this.error = getErrorMessageByCode(err.error.code)
+        runInAction(() => (this.error = getErrorMessageByCode(err.error.code)))
       })
   }
 }
 
-const tasks = new Tasks()
+const tasksStore = new Tasks()
 
-export default tasks
-
-function formatTask(data) {
-  return {
-    id: data.id,
-    text: data.title,
-    notes: data.notes,
-    due: data.due ? new Date(data.due) : undefined,
-    isCompleted: data.status === 'completed',
-    position: data.position,
-  }
-}
-
-function getErrorMessageByCode(code) {
-  const errorMessages = {
-    400: 'Cannot load task list',
-  }
-
-  return errorMessages[code] || 'Something bad happened'
-}
+export default tasksStore

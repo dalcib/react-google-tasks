@@ -5,8 +5,10 @@ import ReactDOM from 'react-dom'
 import { Router, Route, browserHistory, Redirect, IndexRoute } from 'react-router'
 import './index.css'
 
-import SessionActions from './actions/SessionActions'
-import SessionStore from './stores/SessionStore'
+//import SessionActions from './actions/SessionActions'
+//import SessionStore from './stores/SessionStore'
+
+import sessionStore from './stores/Session'
 
 import App from './App'
 import LoggedInLayout from './components/LoggedInLayout'
@@ -17,7 +19,7 @@ import TaskListsPage from './containers/TaskListsPageContainer'
 import TasksPage from './containers/TasksPageContainer'
 
 window.handleGoogleApiLoaded = () => {
-  SessionActions.authorize(true, renderApp)
+  sessionStore.authorize(true, renderApp)
 }
 
 class Root extends React.Component {
@@ -44,7 +46,7 @@ function renderApp() {
 }
 
 function requireAuth(nextState, replace) {
-  if (!SessionStore.isLoggedIn()) {
+  if (!sessionStore.isLoggedIn) {
     replace({
       pathname: '/login',
       state: { nextPathname: nextState.location.pathname },

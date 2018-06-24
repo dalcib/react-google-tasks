@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import SessionStore from '../stores/SessionStore'
-import SessionActions from '../actions/SessionActions'
+import sessionStore from '../stores/Session'
+//import SessionStore from '../stores/SessionStore'
+//import SessionActions from '../actions/SessionActions'
 
 import LoginPage from '../components/LoginPage'
 
 function getStateFromFlux() {
   return {
-    isLoggedIn: SessionStore.isLoggedIn(),
+    isLoggedIn: sessionStore.isLoggedIn,
   }
 }
 
@@ -19,7 +20,7 @@ class LoginPageContainer extends Component {
   }
 
   componentDidMount() {
-    SessionStore.addChangeListener(this._onChange)
+    //SessionStore.addChangeListener(this._onChange)
 
     if (this.state.isLoggedIn) {
       this.redirectLoggenInUser()
@@ -32,9 +33,9 @@ class LoginPageContainer extends Component {
     }
   }
 
-  componentWillUnmount() {
+  /*  componentWillUnmount() {
     SessionStore.removeChangeListener(this._onChange)
-  }
+  } */
 
   redirectLoggenInUser = () => {
     const { location } = this.props
@@ -47,7 +48,7 @@ class LoginPageContainer extends Component {
   }
 
   handleLogin = () => {
-    SessionActions.authorize()
+    sessionStore.authorize()
   }
 
   render() {

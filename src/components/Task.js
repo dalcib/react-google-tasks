@@ -69,6 +69,7 @@ class Task extends Component {
       text: this.input.value,
       notes: this.textarea.value,
 
+      // @ts-ignore
       due: this.due.state.date,
     })
 
@@ -107,8 +108,8 @@ class Task extends Component {
         />
         <textarea
           className="Task__textarea"
-          cols="30"
-          rows="3"
+          cols={30}
+          rows={3}
           defaultValue={notes}
           ref={c => (this.textarea = c)}
           placeholder="Enter task description"

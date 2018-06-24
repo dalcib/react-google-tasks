@@ -1,8 +1,15 @@
 //const Task = { id: '', text: '', notes?: '', due?: undefined || '', isCompleted: false, position: '' }
 //https://developers.google.com/apis-explorer/#search/tasks/tasks/v1/
 
-import { observable, action } from 'mobx'
+import { observable, action, runInAction } from 'mobx'
 import api from '../api/index'
+
+function formatTaskList(data) {
+  return {
+    id: data.id,
+    name: data.title,
+  }
+}
 
 class TaskList {
   @observable taskLists = []
@@ -11,14 +18,19 @@ class TaskList {
 
   @action
   loadTaskLists() {
+    console.log('loadTaskLists')
     api
       .listTaskLists()
       .then(data => {
-        this.taskLists = data.items.map(formatTaskList)
+        runInAction(() => (this.taskLists = data.items.map(formatTaskList)))
+        console.log('runInAction')
       })
       .catch(err => {
-        this.taskLists = []
-        this.error = err
+        runInAction(() => {
+          this.taskLists = []
+          this.error = err
+          console.log('errrr')
+        })
       })
   }
 
@@ -27,10 +39,12 @@ class TaskList {
     api
       .showTaskList(taskListId)
       .then(data => {
-        this.currentTaskList = formatTaskList(data)
+        runInAction(() => {
+          this.currentTaskList = formatTaskList(data)
+        })
       })
       .catch(err => {
-        this.error = err
+        runInAction(() => (this.error = err))
       })
   }
 
@@ -40,10 +54,10 @@ class TaskList {
       .insertTaskList({ title: params.name })
       .then(data => {
         const newTaskList = formatTaskList(data)
-        this.taskLists.push(newTaskList)
+        runInAction(() => this.taskLists.push(newTaskList))
       })
       .catch(err => {
-        this.error = err
+        runInAction(() => (this.error = err))
       })
   }
 
@@ -55,17 +69,19 @@ class TaskList {
         title: params.name,
       })
       .then(data => {
-        const updatedTaskListIndex = this.taskLists.findIndex(
-          taskList => taskList.id === params.taskListId
-        )
-        this.taskLists[updatedTaskListIndex] = formatTaskList(data)
+        runInAction(() => {
+          const updatedTaskListIndex = this.taskLists.findIndex(
+            taskList => taskList.id === params.taskListId
+          )
+          this.taskLists[updatedTaskListIndex] = formatTaskList(data)
 
-        if (this.currentTaskList && this.currentTaskList.id === params.taskListId) {
-          this.currentTaskList = formatTaskList(data)
-        }
+          if (this.currentTaskList && this.currentTaskList.id === params.taskListId) {
+            this.currentTaskList = formatTaskList(data)
+          }
+        })
       })
       .catch(err => {
-        this.error = err
+        runInAction(() => (this.error = err))
       })
   }
 
@@ -74,28 +90,23 @@ class TaskList {
     api
       .deleteTaskList({ taskListId: params.taskListId })
       .then(data => {
-        const deletedTaskListIndex = this.taskLists.findIndex(
-          taskList => taskList.id === params.taskListId
-        )
-        this.taskLists.splice(deletedTaskListIndex, 1)
+        runInAction(() => {
+          const deletedTaskListIndex = this.taskLists.findIndex(
+            taskList => taskList.id === params.taskListId
+          )
+          this.taskLists.splice(deletedTaskListIndex, 1)
 
-        if (this.currentTaskList && this.currentTaskList.id === params.taskListId) {
-          this.currentTaskList = null
-        }
+          if (this.currentTaskList && this.currentTaskList.id === params.taskListId) {
+            this.currentTaskList = null
+          }
+        })
       })
       .catch(err => {
-        this.error = err
+        runInAction(() => (this.error = err))
       })
   }
 }
 
-const taskList = new TaskList()
+const taskListStore = new TaskList()
 
-export default taskList
-
-function formatTaskList(data) {
-  return {
-    id: data.id,
-    name: data.title,
-  }
-}
+export default taskListStore
