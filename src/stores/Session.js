@@ -1,14 +1,17 @@
+/// <reference path="./../index.d.ts" />
 import { observable, action, runInAction } from 'mobx'
 import api from '../api/index'
 
-class Session {
+export class Session {
   @observable isLoggedIn = false
 
   @action
   authorize(immediate = false, callback) {
     api
-      .authorize({ immediate })
+      .authorize()
       .then(() => {
+        console.log('xxxx')
+
         runInAction(() => {
           this.isLoggedIn = true
         })

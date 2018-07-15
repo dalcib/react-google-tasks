@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { observer, inject } from 'mobx-react'
+import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 
 import taskListStore from '../stores/TaskList'

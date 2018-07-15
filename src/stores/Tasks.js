@@ -25,9 +25,12 @@ class Tasks {
   @observable error = null
 
   @action
-  loadTasks(taskListId) {
-    api
-      .listTasks(taskListId)
+  loadTasks(tasklist) {
+    //eslint-disable-next-line
+    gapi.client.tasks.tasks
+      .list({ tasklist })
+      /*     api
+      .listTasks(tasklist) */
       .then(data => {
         runInAction(() => (this.tasks = data.items.map(formatTask) || []))
       })
@@ -54,19 +57,26 @@ class Tasks {
   }
 
   @action
-  updateTask(params) {
+  updateTask({ tasklist, task, ...params }) {
     const newDue = params.due
       ? new Date(params.due.getTime() - params.due.getTimezoneOffset() * 60000)
       : params.due
-
-    api
+    //eslint-disable-next-line
+    gapi.client.tasks.tasks
+      .update({
+        tasklist,
+        task,
+        due: newDue,
+        ...params,
+      })
+      /*     api
       .updateTask({
         taskListId: params.taskListId,
         taskId: params.taskId,
         title: params.text,
         notes: params.notes,
         due: newDue,
-      })
+      }) */
       .then(data => {
         const updatedTaskIndex = this.tasks.findIndex(task => task.id === params.taskId)
         runInAction(() => (this.tasks[updatedTaskIndex] = formatTask(data)))

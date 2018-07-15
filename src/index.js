@@ -8,7 +8,7 @@ import './index.css'
 //import SessionActions from './actions/SessionActions'
 //import SessionStore from './stores/SessionStore'
 
-import sessionStore from './stores/Session'
+import sessionStore, { Session } from './stores/Session'
 
 import App from './App'
 import LoggedInLayout from './components/LoggedInLayout'
@@ -17,6 +17,7 @@ import AboutPage from './components/AboutPage'
 import LoginPage from './containers/LoginPageContainer'
 import TaskListsPage from './containers/TaskListsPageContainer'
 import TasksPage from './containers/TasksPageContainer'
+//import { Session } from 'inspector';
 
 window.handleGoogleApiLoaded = () => {
   sessionStore.authorize(true, renderApp)
@@ -53,3 +54,5 @@ function requireAuth(nextState, replace) {
     })
   }
 }
+
+export { Session }

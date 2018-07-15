@@ -2,13 +2,13 @@ declare namespace google_tasks {
   /* declare function parallelNock(host: string, options?: any): any;
 export = parallelNock; */
 
-  export interface Tasks {
+  interface Tasks {
     tasks: [Task]
     isLoading: boolean
     error?: string
   }
 
-  export interface GTask {
+  interface GTask {
     kind: string
     id: string
     etag: string
@@ -32,13 +32,20 @@ export = parallelNock; */
     ]
   }
 
-  export interface Task {
+  interface Task {
     id: string
     text: string
     notes?: string
     due?: string
     isCompleted: boolean
     position: string //data.position
+  }
+
+  export interface Session {
+    isLoggedIn: boolean
+    teste: string
+    num: number
+    xxx: string
   }
 }
 

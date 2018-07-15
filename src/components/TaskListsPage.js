@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import { observer } from 'mobx-react'
 import './TaskListsPage.css'
-import taskListStore from '../stores/TaskList'
+//import taskListStore from '../stores/TaskList'
 
 import { List, ListItem } from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
